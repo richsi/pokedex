@@ -9,6 +9,7 @@ import random
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.optim import lr_scheduler
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, random_split
 from torchvision.transforms import v2
@@ -66,6 +67,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = SmallVGGNet(IMAGE_DIM[0], IMAGE_DIM[1], IMAGE_DIM[2], len(dataset.classes)).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=INIT_LR)
+scheduler = lr_scheduler.StepLR(optimizer=optimizer, step_size=20, gamma=0.1)
 
 # Training and saving model
 for epoch in range(EPOCHS):
@@ -75,7 +77,9 @@ for epoch in range(EPOCHS):
     # Training
     for images, labels in train_loader:
         images, labels = images.to(device), labels.to(device)
+
         optimizer.zero_grad()
+
         outputs = model(images)
         loss = criterion(outputs, labels)
         loss.backward()
@@ -96,17 +100,22 @@ for epoch in range(EPOCHS):
         running_loss, running_corrects = 0.0, 0
         for images, labels in test_loader:
             images, labels = images.to(device), labels.to(device)
+
             outputs = model(images)
             loss = criterion(outputs, labels)
             running_loss += loss.item() * images.size(0)
             _, preds = torch.max(outputs, 1)
             running_corrects += torch.sum(preds == labels.data)
+
         epoch_loss = running_loss / len(test_loader.dataset)
         epoch_acc = running_corrects.double() / len(test_loader.dataset)
         val_loss.append(epoch_loss)
         val_accuracy.append(epoch_acc)
 
-    print(f'[INFO] Epoch {epoch+1}/{EPOCHS}, Loss: {loss.item()}')
+    print(f'[INFO] Epoch {epoch+1}/{EPOCHS}, '
+          f'Train Loss: {train_loss[-1]:.4f}, Train Acc: {train_accuracy[-1]:.4f}, '
+          f'Val Loss: {val_loss[-1]:.4f}, Val Acc: {val_accuracy[-1]:.4f}')
+
 
 torch.save(model.state_dict(), args["output"])
 
@@ -132,4 +141,4 @@ plt.ylabel('Accuracy')
 plt.legend()
 
 plt.tight_layout()
-plt.show()
+plt.savefig(args["plot"])
