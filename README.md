@@ -6,3 +6,7 @@ Generation 1 starter Pokemon classifier - Charmander, Squirtle, Bulbasaur
 * model/train.py: Uses PyTorch to transform and load the images. It also trains the custom VGGNet model (model/model.py) using CrossEntropy as the criterion and Adam for the optimizer. Model is then saved in model/model.pt and the model's loss and accuracy are saved into plot.png
 * classify.py:
 
+## Next Steps:
+* Finish writing classifier
+* Convert model.pt into Swift CoreML framework
+* Research Swift ML Real Time object detection and implement
