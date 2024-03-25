@@ -5,14 +5,12 @@ class SmallVGGNet(nn.Module):
     def __init__(self, width, height, depth, num_classes):
         super(SmallVGGNet, self).__init__()
 
-        input_shape = (depth, height, width)
-
         self.features = nn.Sequential(
             # CONV -> RELU -> POOL layer
-            nn.Conv2d(input_shape[0], 32, kernel_size=(3,3), padding="same"),
+            nn.Conv2d(depth, 32, kernel_size=(3,3), padding="same"),
             nn.ReLU(),
             nn.BatchNorm2d(32),
-            nn.MaxPool2d(pool_size=(3,3)),
+            nn.MaxPool2d(kernel_size=(3,3)),
             nn.Dropout(0.5),
 
             # (CONV -> RELU) * 2 -> POOL layer
@@ -22,7 +20,7 @@ class SmallVGGNet(nn.Module):
             nn.Conv2d(32, 64, kernel_size=(3, 3), padding="same"),
             nn.ReLU(),
             nn.BatchNorm2d(64),
-            nn.MaxPool2d(pool_size=(2,2)),
+            nn.MaxPool2d(kernel_size=(3,3)),
             nn.Dropout(0.25),
 
             # Same thing as above block
@@ -32,7 +30,7 @@ class SmallVGGNet(nn.Module):
             nn.Conv2d(32, 64, kernel_size=(3, 3), padding="same"),
             nn.ReLU(),
             nn.BatchNorm2d(64),
-            nn.MaxPool2d(pool_size=(2,2)),
+            nn.MaxPool2d(kernel_size=(3,3)),
             nn.Dropout(0.25),
         )
 
