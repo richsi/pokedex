@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, random_split
 from torchvision.transforms import v2
 from torchvision.datasets import ImageFolder
+from sklearn.preprocessing import LabelBinarizer
 from model import SmallVGGNet
 
 ap = argparse.ArgumentParser()
@@ -68,6 +69,9 @@ model = SmallVGGNet(IMAGE_DIM[0], IMAGE_DIM[1], IMAGE_DIM[2], len(dataset.classe
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=INIT_LR)
 scheduler = lr_scheduler.StepLR(optimizer=optimizer, step_size=20, gamma=0.1)
+
+label_binarizer = LabelBinerizer()
+label_binarizer.fit(dataset.classes)
 
 # Training and saving model
 for epoch in range(EPOCHS):
